@@ -9,6 +9,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/5yg59bn70399hn6s/branch/master?svg=true)](https://ci.appveyor.com/project/JanSkoruba/identityserver4-admin/branch/master)
 [![Build Status](https://dev.azure.com/skoruba/IdentityServer4.Admin/_apis/build/status/IdentityServer4.Admin-CI?branchName=master)](https://dev.azure.com/skoruba/IdentityServer4.Admin/_build/latest?definitionId=2?branchName=master)
 [![Join the chat at https://gitter.im/skoruba/IdentityServer4.Admin](https://badges.gitter.im/skoruba/IdentityServer4.Admin.svg)](https://gitter.im/skoruba/IdentityServer4.Admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbravecobra%2FIdentityServer4.Admin.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbravecobra%2FIdentityServer4.Admin?ref=badge_shield)
 
 This is currently in **beta version**
 
@@ -470,6 +471,9 @@ This repository is licensed under the terms of the [**MIT license**](LICENSE.md)
 
 **NOTE**: This repository uses the source code from https://github.com/IdentityServer/IdentityServer4.Quickstart.UI which is under the terms of the
 [**Apache License 2.0**](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/master/LICENSE).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbravecobra%2FIdentityServer4.Admin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbravecobra%2FIdentityServer4.Admin?ref=badge_large)
 
 ## Acknowledgements
 
