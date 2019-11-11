@@ -26,11 +26,10 @@ jobs:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       run: |
-        dotnet tool install --global dotnet-ef --version 3.0.0-*
-        export PATH="$PATH:/Users/runner/.dotnet/tools"
-        cd src/Skoruba.IdentityServer4.Admin
+        dotnet tool install --global dotnet-ef --version 3.0.0  
         dotnet restore
         dotnet ef
+        cd src/Skoruba.IdentityServer4.Admin
         dotnet ef migrations add AspNetIdentityDbInit -c AdminIdentityDbContext -o Data/Migrations/Identity
         dotnet ef migrations add LoggingDbInit -c AdminLogDbContext -o Data/Migrations/Logging
         dotnet ef migrations add IdentityServerConfigurationDbInit -c IdentityServerConfigurationDbContext -o Data/Migrations/IdentityServerConfiguration
