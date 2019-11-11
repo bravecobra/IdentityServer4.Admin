@@ -62,3 +62,30 @@ jobs:
         docker --version
         docker-compose --version
         docker-compose config
+
+    - name: Publish skoruba.identityserver4.admin to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      if: matrix.os != 'macOS-latest'
+      with:
+        name: bravecobra/IdentityServer4.Admin/skoruba.identityserver4.admin:${{ matrix.os }}-${{ github.sha }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: docker.pkg.github.com
+
+    - name: Publish skoruba.identityserver4.admin.api to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      if: matrix.os != 'macOS-latest'
+      with:
+        name: bravecobra/IdentityServer4.Admin/skoruba.identityserver4.admin.api:${{ matrix.os }}-${{ github.sha }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: docker.pkg.github.com
+
+    - name: Publish skoruba.identityserver4.sts.identity to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      if: matrix.os != 'macOS-latest'
+      with:
+        name: bravecobra/IdentityServer4.Admin/skoruba.identityserver4.sts.identity:${{ matrix.os }}-${{ github.sha }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: docker.pkg.github.com             
