@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using IdentityModel;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.Storage;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +10,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Skoruba.AuditLogging.EntityFramework.DbContexts;
+using Skoruba.AuditLogging.EntityFramework.Entities;
+using Skoruba.AuditLogging.EntityFramework.Extensions;
+using Skoruba.AuditLogging.EntityFramework.Repositories;
+using Skoruba.AuditLogging.EntityFramework.Services;
+using Skoruba.AuditLogging.Events.Http;
+using Skoruba.IdentityServer4.Admin.Api.AuditLogging;
 using Skoruba.IdentityServer4.Admin.Api.Configuration;
 using Skoruba.IdentityServer4.Admin.Api.Configuration.ApplicationParts;
 using Skoruba.IdentityServer4.Admin.Api.Configuration.Constants;
@@ -20,6 +30,25 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
 {
     public static class StartupHelpers
     {
+        public static IServiceCollection AddAuditEventLogging<TAuditLoggingDbContext, TAuditLog>(
+            this IServiceCollection services, IConfiguration configuration)
+            where TAuditLog : AuditLog, new()
+            where TAuditLoggingDbContext : IAuditLoggingDbContext<TAuditLog>
+        {
+            var auditLoggingConfiguration = configuration.GetSection(nameof(AuditLoggingConfiguration))
+                .Get<AuditLoggingConfiguration>();
+            services.AddSingleton(auditLoggingConfiguration);
+
+            services.AddAuditLogging(options => { options.Source = auditLoggingConfiguration.Source; })
+                .AddEventData<ApiAuditSubject, ApiAuditAction>()
+                .AddAuditSinks<DatabaseAuditEventLoggerSink<TAuditLog>>();
+
+            services
+                .AddTransient<IAuditLoggingRepository<TAuditLog>,
+                    AuditLoggingRepository<TAuditLoggingDbContext, TAuditLog>>();
+
+            return services;
+        }
 
         /// <summary>
         /// Register services for MVC
@@ -53,20 +82,29 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
         {
             services.TryAddTransient(typeof(IGenericControllerLocalizer<>), typeof(GenericControllerLocalizer<>));
 
-            services.AddMvc(o =>
-                {
-                    o.Conventions.Add(new GenericControllerRouteConvention());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddControllersWithViews(o => { o.Conventions.Add(new GenericControllerRouteConvention()); })
                 .AddDataAnnotationsLocalization()
                 .ConfigureApplicationPartManager(m =>
                 {
-                    m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
-                        TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
-                        TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>());
+                    m.FeatureProviders.Add(
+                        new GenericTypeControllerFeatureProvider<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey,
+                            TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
+                            TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
+                            TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>());
                 });
         }
 
+        /// <summary>
+        /// Add configuration for logging
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="configuration"></param>
+        public static void AddLogging(this IApplicationBuilder app, IConfiguration configuration)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+        }
 
         /// <summary>
         /// Register DbContexts for IdentityServer ConfigurationStore and PersistedGrants, Identity and Logging
@@ -78,24 +116,28 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
         /// <typeparam name="TIdentityDbContext"></typeparam>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        public static void AddDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext>(this IServiceCollection services, IConfiguration configuration)
-        where TIdentityDbContext : DbContext
-        where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
-        where TConfigurationDbContext : DbContext, IAdminConfigurationDbContext
-        where TLogDbContext : DbContext, IAdminLogDbContext
+        public static void AddDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext,
+            TLogDbContext, TAuditLoggingDbContext>(this IServiceCollection services, IConfiguration configuration)
+            where TIdentityDbContext : DbContext
+            where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
+            where TConfigurationDbContext : DbContext, IAdminConfigurationDbContext
+            where TLogDbContext : DbContext, IAdminLogDbContext
+            where TAuditLoggingDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
         {
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             // Config DB for identity
             services.AddDbContext<TIdentityDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey),
+                options.UseSqlServer(
+                    configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey),
                     sql => sql.MigrationsAssembly(migrationsAssembly)));
 
             // Config DB from existing connection
             services.AddConfigurationDbContext<TConfigurationDbContext>(options =>
             {
                 options.ConfigureDbContext = b =>
-                    b.UseSqlServer(configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey),
+                    b.UseSqlServer(
+                        configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey),
                         sql => sql.MigrationsAssembly(migrationsAssembly));
             });
 
@@ -103,7 +145,8 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
             services.AddOperationalDbContext<TPersistedGrantDbContext>(options =>
             {
                 options.ConfigureDbContext = b =>
-                    b.UseSqlServer(configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey),
+                    b.UseSqlServer(
+                        configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey),
                         sql => sql.MigrationsAssembly(migrationsAssembly));
             });
 
@@ -111,6 +154,12 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
             services.AddDbContext<TLogDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString(ConfigurationConsts.AdminLogDbConnectionStringKey),
+                    optionsSql => optionsSql.MigrationsAssembly(migrationsAssembly)));
+
+            // Audit logging connection
+            services.AddDbContext<TAuditLoggingDbContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString(ConfigurationConsts.AdminAuditLogDbConnectionStringKey),
                     optionsSql => optionsSql.MigrationsAssembly(migrationsAssembly)));
         }
 
@@ -123,9 +172,9 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
         /// <param name="services"></param>
         /// <param name="adminApiConfiguration"></param>
         public static void AddApiAuthentication<TIdentityDbContext, TUser, TRole>(this IServiceCollection services,
-            AdminApiConfiguration adminApiConfiguration) 
-            where TIdentityDbContext : DbContext 
-            where TRole : class 
+            AdminApiConfiguration adminApiConfiguration)
+            where TIdentityDbContext : DbContext
+            where TRole : class
             where TUser : class
         {
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -133,27 +182,27 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
                 {
                     options.Authority = adminApiConfiguration.IdentityServerBaseUrl;
                     options.ApiName = adminApiConfiguration.OidcApiName;
-#if DEBUG
-                    options.RequireHttpsMetadata = false;
-#else
-                    options.RequireHttpsMetadata = true;
-#endif
+                    options.RequireHttpsMetadata = adminApiConfiguration.RequireHttpsMetadata;
                 });
 
-            services.AddIdentity<TUser, TRole>(options =>
-                {
-                    options.User.RequireUniqueEmail = true;
-                })
+            services.AddIdentity<TUser, TRole>(options => { options.User.RequireUniqueEmail = true; })
                 .AddEntityFrameworkStores<TIdentityDbContext>()
                 .AddDefaultTokenProviders();
         }
 
         public static void AddAuthorizationPolicies(this IServiceCollection services)
         {
+            var adminApiConfiguration = services.BuildServiceProvider().GetService<AdminApiConfiguration>();
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(AuthorizationConsts.AdministrationPolicy,
-                    policy => policy.RequireRole(AuthorizationConsts.AdministrationRole));
+                    policy =>
+                        policy.RequireAssertion(context => context.User.HasClaim(c =>
+                                (c.Type == JwtClaimTypes.Role && c.Value == adminApiConfiguration.AdministrationRole) ||
+                                (c.Type == $"client_{JwtClaimTypes.Role}" && c.Value == adminApiConfiguration.AdministrationRole)
+                            )
+                        ));
             });
         }
     }
