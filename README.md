@@ -36,7 +36,7 @@ dotnet new skoruba.is4admin --name MyProject --title MyProject --adminrole MyRol
 
 Project template options:
 
-```
+```text
 --name: [string value] for project name
 --title: [string value] for title and footer of the administration in UI
 --adminrole: [string value] for name of admin role, that is used to authorize the administration
@@ -117,74 +117,74 @@ The following Gulp commands are available:
 
 - Run entity framework migrations:
 
-### Visual Studio command line (Nuget package manager):
+### Visual Studio command line (Nuget package manager)
 
-#### Migrations for Asp.Net Core Identity DbContext:
+#### Migrations for Asp.Net Core Identity DbContext
 
 ```powershell
 Add-Migration AspNetIdentityDbInit -context AdminIdentityDbContext -output Data/Migrations/Identity
 Update-Database -context AdminIdentityDbContext
 ```
 
-#### Migrations for Logging DbContext:
+#### Migrations for Logging DbContext
 
 ```powershell
 Add-Migration LoggingDbInit -context AdminLogDbContext -output Data/Migrations/Logging
 Update-Database -context AdminLogDbContext
 ```
 
-#### Migrations for IdentityServer configuration DbContext:
+#### Migrations for IdentityServer configuration DbContext
 
 ```powershell
 Add-Migration IdentityServerConfigurationDbInit -context IdentityServerConfigurationDbContext -output Data/Migrations/IdentityServerConfiguration
 Update-Database -context IdentityServerConfigurationDbContext
 ```
 
-#### Migrations for IdentityServer persisted grants DbContext:
+#### Migrations for IdentityServer persisted grants DbContext
 
 ```powershell
 Add-Migration IdentityServerPersistedGrantsDbInit -context IdentityServerPersistedGrantDbContext -output Data/Migrations/IdentityServerGrants
 Update-Database -context IdentityServerPersistedGrantDbContext
 ```
 
-#### Migrations for AuditLogging DbContext:
+#### Migrations for AuditLogging DbContext
 
 ```powershell
-Add-Migration AuditLoggingDbInit -context AuditLoggingDbContext -output Data/Migrations/AuditLogging
-Update-Database -context AuditLoggingDbContext
+Add-Migration AuditLoggingDbInit -context AdminAuditLogDbContext -output Data/Migrations/AuditLogging
+Update-Database -context AdminAuditLogDbContext
 ```
 
-### Or via `dotnet CLI`:
+### Or via `dotnet CLI`
 
-#### Migrations for Asp.Net Core Identity DbContext:
+#### Migrations for Asp.Net Core Identity DbContext
 
 ```powershell
 dotnet ef migrations add AspNetIdentityDbInit -c AdminIdentityDbContext -o Data/Migrations/Identity
 dotnet ef database update -c AdminIdentityDbContext
 ```
 
-#### Migrations for Logging DbContext:
+#### Migrations for Logging DbContext
 
 ```powershell
 dotnet ef migrations add LoggingDbInit -c AdminLogDbContext -o Data/Migrations/Logging
 dotnet ef database update -c AdminLogDbContext
 ```
 
-#### Migrations for IdentityServer configuration DbContext:
+#### Migrations for IdentityServer configuration DbContext
 
 ```powershell
 dotnet ef migrations add IdentityServerConfigurationDbInit -c IdentityServerConfigurationDbContext -o Data/Migrations/IdentityServerConfiguration
 dotnet ef database update -c IdentityServerConfigurationDbContext
 ```
 
-#### Migrations for IdentityServer persisted grants DbContext:
+#### Migrations for IdentityServer persisted grants DbContext
 
 ```powershell
 dotnet ef migrations add IdentityServerPersistedGrantsDbInit -c IdentityServerPersistedGrantDbContext -o Data/Migrations/IdentityServerGrants
 dotnet ef database update -c IdentityServerPersistedGrantDbContext
 ```
 
-#### Migrations for AuditLogging DbContext:
+#### Migrations for AuditLogging DbContext
 
 ```powershell
 dotnet ef migrations add AuditLoggingDbInit -c AuditLoggingDbContext -o Data/Migrations/AuditLogging
@@ -193,13 +193,13 @@ dotnet ef database update -c AuditLoggingDbContext
 
 Migrations are not a part of the repository - they are ignored in `.gitignore`.
 
-### We suggest to use seed data:
+### We suggest to use seed data
 
 - In `Program.cs` -> `Main`, uncomment `DbMigrationHelpers.EnsureSeedData(host)` or use dotnet CLI `dotnet run /seed`
 - The `Clients` and `Resources` files in `appsettings.json` (section called: IdentityServerData) - are the initial data, based on a sample from IdentityServer4
 - The `Users` file in `appsettings.json` (section called: IdentityData) contains the default admin username and password for the first login
 
-### Using other database engines - PostgreSQL, SQLite, MySQL etc.
+### Using other database engines - PostgreSQL, SQLite, MySQL etc
 
 - [Follow these steps for setup other database engines](docs/EFMigration.md)
 
@@ -213,7 +213,7 @@ Migrations are not a part of the repository - they are ignored in `.gitignore`.
 
 - In `Skoruba.IdentityServer4.STS.Identity` - in `appsettings.json` is possible to specify which column will be used for login (`Username` or `Email`):
 
-```
+```json
   "LoginConfiguration": {
     "ResolutionPolicy": "Username"
   }
@@ -221,7 +221,7 @@ Migrations are not a part of the repository - they are ignored in `.gitignore`.
 
 or using `Email`:
 
-```
+```json
   "LoginConfiguration": {
     "ResolutionPolicy": "Email"
   }
@@ -231,7 +231,7 @@ or using `Email`:
 
 - In `Skoruba.IdentityServer4.STS.Identity` - in `appsettings.json` is possible to disable user registration (`default: true`):
 
-```
+```json
  "RegisterConfiguration": {
     "Enabled": false
   }
@@ -242,7 +242,7 @@ or using `Email`:
 - For development is running on url - `http://localhost:5001` and swagger UI is available on url - `http://localhost:5001/swagger`
 - For swagger UI is configured a client and an API in STS:
 
-```
+```json
 "AdminApiConfiguration": {
   "IdentityServerBaseUrl": "http://localhost:5000",
   "OidcSwaggerUIClientId": "skoruba_identity_admin_api_swaggerui",
@@ -254,12 +254,11 @@ or using `Email`:
 
 ![SwaggerUI-preview](docs/Images/Admin-Swagger-UI.PNG)
 
-
 ## How to configure an external provider in STS
 
 - In `Skoruba.IdentityServer4.STS.Identity/Helpers/StartupHelpers.cs` - is method called `AddExternalProviders` which contains the example with `GitHub` and in `appsettings.json`:
 
-```
+```json
 "ExternalProvidersConfiguration": {
         "UseGitHubProvider": false,
         "GitHubClientId": "",
@@ -269,13 +268,15 @@ or using `Email`:
 
 - It is possible to extend `ExternalProvidersConfiguration` with another configuration properties.
 
-### List of external providers for ASP.NET Core:
-  - https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers
-  - https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/
- 
+### List of external providers for ASP.NET Core
+
+- <https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers>
+- <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/>
+
 ### Azure AD
+
 - Great article how to set up Azure AD:
-  - https://azure.microsoft.com/cs-cz/resources/samples/active-directory-dotnet-webapp-openidconnect-aspnetcore/
+  - <https://azure.microsoft.com/cs-cz/resources/samples/active-directory-dotnet-webapp-openidconnect-aspnetcore/>
 
 ## Email service
 
@@ -284,7 +285,8 @@ or using `Email`:
 ### SendGrid
 
 In STS project - in `appsettings.json`:
-```
+
+```json
 "SendgridConfiguration": {
         "ApiKey": "",
         "SourceEmail": "",
@@ -294,7 +296,7 @@ In STS project - in `appsettings.json`:
 
 ### SMTP
 
-```
+```json
 "SmtpConfiguration": {
         "Host": "",
         "Login": "",
@@ -310,14 +312,14 @@ In STS project - in `appsettings.json`:
   - Russian
   - Persian
   - Swedish
-  
-#### Feel free to send a PR with your translation. :blush:
+
+## Feel free to send a PR with your translation. :blush:
 
 - All labels and messages are stored in the resources `.resx` - locatated in `/Resources`
 
-  - Client label descriptions from - http://docs.identityserver.io/en/latest/reference/client.html
-  - Api Resource label descriptions from - http://docs.identityserver.io/en/latest/reference/api_resource.html
-  - Identity Resource label descriptions from - http://docs.identityserver.io/en/latest/reference/identity_resource.html
+  - Client label descriptions from - <http://docs.identityserver.io/en/latest/reference/client.html>
+  - Api Resource label descriptions from - <http://docs.identityserver.io/en/latest/reference/api_resource.html>
+  - Identity Resource label descriptions from - <http://docs.identityserver.io/en/latest/reference/identity_resource.html>
 
 ## Tests
 
@@ -332,7 +334,7 @@ In STS project - in `appsettings.json`:
 
 ## Overview
 
-### Solution structure:
+### Solution structure
 
 - STS:
 
@@ -355,7 +357,7 @@ In STS project - in `appsettings.json`:
   - `Skoruba.IdentityServer4.Admin.EntityFramework` - EF Core data layer that contains Entities for the IdentityServer4
 
   - `Skoruba.IdentityServer4.Admin.EntityFramework.Identity` - EF Core data layer that contains Repositories for the Asp.Net Core Identity
-  
+
   - `Skoruba.IdentityServer4.Admin.EntityFramework.Extensions` - project that contains extensions related to EntityFramework
 
   - `Skoruba.IdentityServer4.Admin.EntityFramework.Shared` - project that contains DbContexts for the IdentityServer4, Logging and Asp.Net Core Identity, inluding shared Identity entities
@@ -368,13 +370,13 @@ In STS project - in `appsettings.json`:
 
   - `Skoruba.IdentityServer4.STS.IntegrationTests` - xUnit project that contains the integration tests for STS
 
-### The admininistration contains the following sections:
+### The admininistration contains the following sections
 
 ![Skoruba.IdentityServer4.Admin App](docs/Images/Skoruba.IdentityServer4.Admin-Solution.png)
 
 ## IdentityServer4
 
-**Clients**
+### Clients
 
 It is possible to define the configuration according the client type - by default the client types are used:
 
@@ -396,7 +398,7 @@ It is possible to define the configuration according the client type - by defaul
   - Client Scopes
   - Client Secrets
 
-**API Resources**
+### API Resources
 
 - Actions: Add, Update, Remove
 - Entities:
@@ -406,7 +408,7 @@ It is possible to define the configuration according the client type - by defaul
   - Api Secrets
   - Api Properties
 
-**Identity Resources**
+### Identity Resources
 
 - Actions: Add, Update, Remove
 - Entities:
@@ -415,7 +417,7 @@ It is possible to define the configuration according the client type - by defaul
 
 ## Asp.Net Core Identity
 
-**Users**
+### Users
 
 - Actions: Add, Update, Delete
 - Entities:
@@ -423,7 +425,7 @@ It is possible to define the configuration according the client type - by defaul
   - User Logins
   - User Claims
 
-**Roles**
+### Roles
 
 - Actions: Add, Update, Delete
 - Entities:
@@ -435,7 +437,7 @@ It is possible to define the configuration according the client type - by defaul
 
 ## Roadmap & Vision
 
-### 1.0.0:
+### 1.0.0
 
 - [x] Create the Business Logic & EF layers - available as a nuget package
 - [x] Create a project template using dotnet CLI - `dotnet new template`
@@ -461,14 +463,14 @@ It is possible to define the configuration according the client type - by defaul
   - [x] Asp.Net Core Identity
   - [x] Add swagger support
 [x] Add audit logs to track changes ([#61](https://github.com/skoruba/IdentityServer4.Admin/issues/61))
-  
-### 2.0.0:
+
+### 2.0.0
 
 - [ ] Docker support ([#121](https://github.com/skoruba/IdentityServer4.Admin/issues/121))
 - [ ] Create a project template using dotnet CLI - `dotnet new template`
   - [ ] Second template: The administration of the IdentityServer4 (without Asp.Net Core Identity) ([#79](https://github.com/skoruba/IdentityServer4.Admin/issues/79))
 
-### Future:
+### Future
 
 - Add UI tests ([#97](https://github.com/skoruba/IdentityServer4.Admin/issues/97), [#116](https://github.com/skoruba/IdentityServer4.Admin/issues/116))
 - Add more unit and integration tests :blush:
@@ -479,7 +481,7 @@ It is possible to define the configuration according the client type - by defaul
 
 This repository is licensed under the terms of the [**MIT license**](LICENSE.md).
 
-**NOTE**: This repository uses the source code from https://github.com/IdentityServer/IdentityServer4.Quickstart.UI which is under the terms of the
+**NOTE**: This repository uses the source code from <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI> which is under the terms of the
 [**Apache License 2.0**](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/master/LICENSE).
 
 ## Acknowledgements
@@ -521,6 +523,6 @@ Any feedback is welcome - feel free to create an issue or send me an email - [ja
 
 ## Support and Donation 🕊️
 
-If you like my work, you can support me by donation. 👍 
+If you like my work, you can support me by donation. 👍
 
-https://www.paypal.me/skoruba
+<https://www.paypal.me/skoruba>

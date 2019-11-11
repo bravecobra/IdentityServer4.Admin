@@ -1,10 +1,10 @@
 # How to configure the Administration - IdentityServer4 and Asp.Net Core Identity
 
-## 1) Admin UI:
+## 1) Admin UI
 
 - `Skoruba.IdentityServer4.Admin` - `Startup.cs` - method `ConfigureServices`:
 
-### Configure DbContexts
+### Configure DbContexts for Admin UI
 
 - This `AddDbContexts` helper method is used for registration of DbContexts for whole administration.
 
@@ -14,15 +14,16 @@
   - `AdminLogDbContext`: for logging
   - `IdentityServerConfigurationDbContext`: for IdentityServer configuration store
   - `IdentityServerPersistedGrantDbContext`: for IdentityServer operational store
+  - `AdminAuditLogDbContext`: for audit logging
 
-```
-services.AddDbContexts<AdminIdentityDbContext, IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminLogDbContext>(HostingEnvironment, Configuration);
+```csharp
+services.AddDbContexts<AdminIdentityDbContext, IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext>(HostingEnvironment, Configuration);
 
 ```
 
 ### Configure authentication
 
-```
+```csharp
 services.AddAuthenticationServices<AdminIdentityDbContext, UserIdentity, UserIdentityRole>(HostingEnvironment, rootConfiguration.AdminConfiguration);
 ```
 
@@ -32,7 +33,7 @@ This `AddAuthenticationServices` helper method is for registration authenticatio
 
 ### Configuration of services/repositories for IdentityServer4
 
-```
+```csharp
 services.AddAdminServices<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminLogDbContext>();
 ```
 
@@ -40,7 +41,7 @@ This extension method `AddAdminServices` is for registration all dependencies - 
 
 ### Configuration of Asp.Net Core Identity
 
-```
+```csharp
 services.AddAdminAspNetIdentityServices<AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<string>, string, RoleDto<string>, string, string, string,
                                 UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole,
                                 UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken,
@@ -52,9 +53,9 @@ services.AddAdminAspNetIdentityServices<AdminIdentityDbContext, IdentityServerPe
 This extension method is for registration all dependencies for managing data for Asp.Net Core Identity.
 This is right place for changing Identity model - like change primary key from `string` to another type.
 
-### Configuration of Localization and MVC
+### Configuration of Localization and MVC for Admin UI
 
-```
+```csharp
 services.AddMvcWithLocalization<UserDto<string>, string, RoleDto<string>, string, string, string,
                 UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole,
                 UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken,
@@ -68,7 +69,7 @@ In this method are used same types like for Asp.Net Core Identity because these 
 
 ### Configuration of Authorization policies
 
-```
+```csharp
 services.AddAuthorizationPolicies();
 ```
 
@@ -78,9 +79,9 @@ This extensions method contains only one base policy for administration of whole
 
 - `Skoruba.IdentityServer4.STS.Identity` - `Startup.cs` - method `ConfigureServices`:
 
-### Configure DbContexts
+### Configure DbContexts for STS
 
-```
+```csharp
 services.AddIdentityDbContext<AdminIdentityDbContext>(Configuration);
 ```
 
@@ -88,7 +89,7 @@ In this extension method `AddIdentityDbContext` is defined DbContext for Asp.Net
 
 In `StartupHelpers.cs` is another extension method for registration of DbContexts for IdentityServer4:
 
-```
+```csharp
 AddIdentityServerStoresWithDbContexts<TConfigurationDbContext, TPersistedGrantDbContext>(configuration);
 ```
 
@@ -96,15 +97,15 @@ AddIdentityServerStoresWithDbContexts<TConfigurationDbContext, TPersistedGrantDb
 
 - `Skoruba.IdentityServer4.STS.Identity` - `Startup.cs` - method `ConfigureServices`:
 
-```
+```csharp
 services.AddAuthenticationServices<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminIdentityDbContext, UserIdentity, UserIdentityRole>(Environment, Configuration, Logger);
 ```
 
 - This extension method is defined for registration of Asp.Net Core Identity and IdentityServer4 - including one external provider (GitHub).
 
-### Configuration of Localization and MVC
+### Configuration of Localization and MVC for STS
 
-```
+```csharp
 services.AddMvcWithLocalization<UserIdentity, string>();
 ```
 

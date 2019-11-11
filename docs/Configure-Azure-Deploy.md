@@ -2,7 +2,6 @@
 
 Tutorial covers configuration of Admin for deploy on Azure.
 
-
 ## Create database
 
 If you don't have publicly accessible database you will need to create one. Follow tutorials for creating databases on Azure:
@@ -21,9 +20,8 @@ Then you can generate migrations:
 
 We will assume in the tutorial that STS and Admin were deployed to:
 
-- https://is4-sts.azurewebsites.net - STS
-- https://is4-admin.azurewebsites.net - Admin panel
-
+- <https://is4-sts.azurewebsites.net> - STS
+- <https://is4-admin.azurewebsites.net> - Admin panel
 
 ### Updating URLs
 
@@ -31,14 +29,13 @@ Remember to replace those values with your own in `src/Skoruba.IdentityServer4.A
 
 ```json
 "AdminConfiguration": {
-	"IdentityAdminBaseUrl": "https://is4-admin.azurewebsites.net",
-	"IdentityAdminRedirectUri": "https://is4-admin.azurewebsites.net/signin-oidc",
-	"IdentityServerBaseUrl": "https://is4-sts.azurewebsites.net"
+    "IdentityAdminBaseUrl": "https://is4-admin.azurewebsites.net",
+    "IdentityAdminRedirectUri": "https://is4-admin.azurewebsites.net/signin-oidc",
+    "IdentityServerBaseUrl": "https://is4-sts.azurewebsites.net"
 }
 ```
 
-Then follow instructions from [Quickstart deploy to Azure](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-azure) 
-
+Then follow instructions from [Quickstart deploy to Azure](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-azure)
 
 ### Adding certificate for signing tokens
 
@@ -48,18 +45,17 @@ Windows users can download OpenSSL from [here](https://slproweb.com/products/Win
 
 Or if you're using [Chocolatey](https://chocolatey.org/) you can install above package using:
 
-```
-choco install openssl.light 
+```powershell
+choco install openssl.light
 ```
 
 To generate pfx certificate:
 
-```
+```powershell
 openssl genrsa 2048 > private.pem
 openssl req -x509 -new -key private.pem -out public.pem
 openssl pkcs12 -export -in public.pem -inkey private.pem -out mycert.pfx
 ```
-
 
 Now we can upload the certificate in Azure Portal to our website:
 
@@ -71,7 +67,7 @@ While we're at it we can allow only https traffic to our STS and admin:
 
 Then head to "Application Settings" section within your Azure App Service and create a new Application setting with the following parameters:
 
-```
+```text
 Name: WEBSITE_LOAD_CERTIFICATES
 Value: *
 ```
@@ -88,15 +84,17 @@ Last step before deploy - we need to update `src/Skoruba.IdentityServer4.STS.Ide
 
 In `src/Skoruba.IdentityServer4.STS.Identity/Helpers/IdentityServerBuilderExtensions.cs` - change loading certificates from `StoreLocation.LocalMachine` to `StoreLocation.CurrentUser`.
 
-And change in method: `AddCustomSigningCredential` 
+And change in method: `AddCustomSigningCredential`
 from:
-```
+
+```csharp
 var certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateConfiguration.SigningCertificateThumbprint, true);
 ```
+
 to:
-```
+
+```csharp
 var certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateConfiguration.SigningCertificateThumbprint, false);
 ```
-
 
 Now we can (re)deploy both apps to Azure.
