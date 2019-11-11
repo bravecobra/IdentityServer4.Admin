@@ -61,7 +61,7 @@ jobs:
       with:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        IMAGE_NAME: 'bravecobra/identityserver4.admin/skoruba.identityserver4.admin'
+        IMAGE_NAME: 'skoruba.identityserver4.admin'
         DOCKERFILE_PATH: 'src/Skoruba.IdentityServer4.Admin/Dockerfile'
         BUILD_CONTEXT: '.'
         
@@ -72,7 +72,7 @@ jobs:
       with:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        IMAGE_NAME: 'bravecobra/identityserver4.admin/skoruba.identityserver4.admin.api'
+        IMAGE_NAME: 'skoruba.identityserver4.admin.api'
         DOCKERFILE_PATH: 'src/Skoruba.IdentityServer4.Admin.Api/Dockerfile'
         BUILD_CONTEXT: '.'          
 
@@ -83,7 +83,7 @@ jobs:
       with:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        IMAGE_NAME: 'bravecobra/identityserver4.admin/skoruba.identityserver4.sts.identity'
+        IMAGE_NAME: 'skoruba.identityserver4.sts.identity'
         DOCKERFILE_PATH: 'src/Skoruba.IdentityServer4.STS.Identity/Dockerfile'
         BUILD_CONTEXT: '.'
 
