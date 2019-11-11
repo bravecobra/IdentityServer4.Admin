@@ -38,12 +38,15 @@ jobs:
         dotnet test ./Skoruba.IdentityServer4.Admin.sln --configuration Release
         
     - name: Build the Skoruba.IdentityServer4.Admin Docker image
+      if: matrix.os != 'macOS-latest'
       run: docker build . --file src/Skoruba.IdentityServer4.Admin/Dockerfile --tag skoruba.identityserver4.admin:${{ matrix.os }}-${{ github.sha }}
 
     - name: Build the Skoruba.IdentityServer4.Admin.Api Docker image
+      if: matrix.os != 'macOS-latest'
       run: docker build . --file src/Skoruba.IdentityServer4.Admin.Api/Dockerfile --tag skoruba.identityserver4.admin.api:${{ matrix.os }}-${{ github.sha }}
 
     - name: Build the Skoruba.IdentityServer4.STS.Identity Docker image
+      if: matrix.os != 'macOS-latest'
       run: docker build . --file src/Skoruba.IdentityServer4.STS.Identity/Dockerfile --tag skoruba.identityserver4.sts.identity:${{ matrix.os }}-${{ github.sha }}
 
     - name: Validate docker-compose-ubuntu
