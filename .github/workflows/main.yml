@@ -27,6 +27,7 @@ jobs:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       run: |
         dotnet tool install --global dotnet-ef
+        export PATH="$PATH:/Users/runner/.dotnet/tools"
         cd src/Skoruba.IdentityServer4.Admin
         dotnet ef migrations add AspNetIdentityDbInit -c AdminIdentityDbContext -o Data/Migrations/Identity
         dotnet ef migrations add LoggingDbInit -c AdminLogDbContext -o Data/Migrations/Logging
