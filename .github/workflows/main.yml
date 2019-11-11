@@ -57,7 +57,7 @@ jobs:
     - name: Publish Docker Image to GPR
       uses: machine-learning-apps/gpr-docker-publish@master
       if: matrix.os == 'ubuntu-latest'
-      id: docker-skoruba.identityserver4.admin
+      id: docker-admin
       with:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -68,7 +68,7 @@ jobs:
     - name: Publish Docker Image to GPR
       uses: machine-learning-apps/gpr-docker-publish@master
       if: matrix.os == 'ubuntu-latest'
-      id: docker-skoruba.identityserver4.admin.api
+      id: docker-admin-api
       with:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -79,7 +79,7 @@ jobs:
     - name: Publish Docker Image to GPR
       uses: machine-learning-apps/gpr-docker-publish@master
       if: matrix.os == 'ubuntu-latest'
-      id: docker
+      id: docker-sts-identity
       with:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
