@@ -36,24 +36,7 @@ jobs:
         dotnet ef migrations add LoggingDbInit -c AdminLogDbContext -o Data/Migrations/Logging
         dotnet ef migrations add IdentityServerConfigurationDbInit -c IdentityServerConfigurationDbContext -o Data/Migrations/IdentityServerConfiguration
         dotnet ef migrations add IdentityServerPersistedGrantsDbInit -c IdentityServerPersistedGrantDbContext -o Data/Migrations/IdentityServerGrants
-        dotnet ef migrations add AuditLoggingDbInit -c AdminAuditLogDbContext -o Data/Migrations/AdminAuditLogging        
-
-#     - name : Generate EF Migrations on ${{ matrix.os }}
-#       env:
-#         DOTNET_CLI_TELEMETRY_OPTOUT: 1
-#         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-#       if: matrix.os == 'windows-latest'
-#       run: |
-#         dotnet tool install --global dotnet-ef --version 3.0.0        
-#         export PATH="$PATH;%USERPROFILE%\.dotnet\tools"
-#         cd src/Skoruba.IdentityServer4.Admin
-#         dotnet restore
-#         dotnet ef      
-#         dotnet ef migrations add AspNetIdentityDbInit -c AdminIdentityDbContext -o Data/Migrations/Identity
-#         dotnet ef migrations add LoggingDbInit -c AdminLogDbContext -o Data/Migrations/Logging
-#         dotnet ef migrations add IdentityServerConfigurationDbInit -c IdentityServerConfigurationDbContext -o Data/Migrations/IdentityServerConfiguration
-#         dotnet ef migrations add IdentityServerPersistedGrantsDbInit -c IdentityServerPersistedGrantDbContext -o Data/Migrations/IdentityServerGrants
-#         dotnet ef migrations add AuditLoggingDbInit -c AdminAuditLogDbContext -o Data/Migrations/AdminAuditLogging
+        dotnet ef migrations add AuditLoggingDbInit -c AdminAuditLogDbContext -o Data/Migrations/AdminAuditLogging
 
     - name: Build .NET solution
       env:
@@ -70,18 +53,39 @@ jobs:
       run: |
         dotnet --version
         dotnet test ./Skoruba.IdentityServer4.Admin.sln --configuration Release
+   
+    - name: Publish Docker Image to GPR
+      uses: machine-learning-apps/gpr-docker-publish@master
+      if: matrix.os == 'ubuntu-latest'
+      id: docker-skoruba.identityserver4.admin
+      with:
+        USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        IMAGE_NAME: 'bravecobra/identityserver4.admin/skoruba.identityserver4.admin'
+        DOCKERFILE_PATH: 'src/Skoruba.IdentityServer4.Admin/Dockerfile'
+        BUILD_CONTEXT: '.'
         
-    - name: Build the Skoruba.IdentityServer4.Admin Docker image
-      if: matrix.os != 'macOS-latest'
-      run: docker build . --file src/Skoruba.IdentityServer4.Admin/Dockerfile --tag bravecobra/identityserver4.admin/skoruba.identityserver4.admin:${{ matrix.os }}-${{ github.sha }}
+    - name: Publish Docker Image to GPR
+      uses: machine-learning-apps/gpr-docker-publish@master
+      if: matrix.os == 'ubuntu-latest'
+      id: docker-skoruba.identityserver4.admin.api
+      with:
+        USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        IMAGE_NAME: 'bravecobra/identityserver4.admin/skoruba.identityserver4.admin.api'
+        DOCKERFILE_PATH: 'src/Skoruba.IdentityServer4.Admin.Api/Dockerfile'
+        BUILD_CONTEXT: '.'          
 
-    - name: Build the Skoruba.IdentityServer4.Admin.Api Docker image
-      if: matrix.os != 'macOS-latest'
-      run: docker build . --file src/Skoruba.IdentityServer4.Admin.Api/Dockerfile --tag bravecobra/identityserver4.admin/skoruba.identityserver4.admin.api:${{ matrix.os }}-${{ github.sha }}
-
-    - name: Build the Skoruba.IdentityServer4.STS.Identity Docker image
-      if: matrix.os != 'macOS-latest'
-      run: docker build . --file src/Skoruba.IdentityServer4.STS.Identity/Dockerfile --tag bravecobra/identityserver4.admin/skoruba.identityserver4.sts.identity:${{ matrix.os }}-${{ github.sha }}
+    - name: Publish Docker Image to GPR
+      uses: machine-learning-apps/gpr-docker-publish@master
+      if: matrix.os == 'ubuntu-latest'
+      id: docker
+      with:
+        USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        IMAGE_NAME: 'bravecobra/identityserver4.admin/skoruba.identityserver4.sts.identity'
+        DOCKERFILE_PATH: 'src/Skoruba.IdentityServer4.STS.Identity/Dockerfile'
+        BUILD_CONTEXT: '.'
 
     - name: Validate docker-compose-ubuntu
       if: matrix.os == 'ubuntu-latest'
@@ -95,31 +99,4 @@ jobs:
       run: |
         docker --version
         docker-compose --version
-        docker-compose config
-
-    - name: Publish skoruba.identityserver4.admin to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
-      if: matrix.os != 'macOS-latest'
-      with:
-        name: bravecobra/identityserver4.admin/skoruba.identityserver4.admin:${{ matrix.os }}-${{ github.sha }}
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: docker.pkg.github.com
-
-    - name: Publish skoruba.identityserver4.admin.api to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
-      if: matrix.os != 'macOS-latest'
-      with:
-        name: bravecobra/identityserver4.admin/skoruba.identityserver4.admin.api:${{ matrix.os }}-${{ github.sha }}
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: docker.pkg.github.com
-
-    - name: Publish skoruba.identityserver4.sts.identity to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
-      if: matrix.os != 'macOS-latest'
-      with:
-        name: bravecobra/identityserver4.admin/skoruba.identityserver4.sts.identity:${{ matrix.os }}-${{ github.sha }}
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: docker.pkg.github.com             
+        docker-compose config       
