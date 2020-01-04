@@ -55,8 +55,8 @@ spec:
           value: http://identityadmin.k8s.local:9000
         - name: IdentityServerData__Clients__1__RedirectUris__0
           value: http://identityadmin.k8s.local:5000/swagger/oauth2-redirect.html
-        - name: Serilog__WriteTo__1__Args__connectionString
-          value: Server=sqlserver;Database=IdentityServer4Admin;User Id=sa;Password=Password_123;MultipleActiveResultSets=true
+        # - name: Serilog__WriteTo__1__Args__connectionString
+        #   value: Server=sqlserver;Database=IdentityServer4Admin;User Id=sa;Password=Password_123;MultipleActiveResultSets=true
         - name: Serilog__MinimumLevel__Default
           value: Information
         image: skorubaidentityserver4admin:latest
