@@ -12,23 +12,14 @@ namespace Skoruba.IdentityServer4.STS.Identity
     {
         public static void Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
-                .Enrich.WithProperty("IdentityServer4.STS.Identity", "IdentityServer4.STS.Identity")
-                .CreateLogger();
             try
             {
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Host terminated unexpectedly");
+                throw ex;
             }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
-            
         }
 
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
@@ -39,15 +30,20 @@ namespace Skoruba.IdentityServer4.STS.Identity
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureLogging((hostingContext, logging) => {
-                    logging.ClearProviders();
-                    var logger = new LoggerConfiguration().ReadFrom.Configuration(hostingContext.Configuration).CreateLogger();
-                    logging.AddSerilog(logger);
-                })
+                 .ConfigureAppConfiguration((hostContext, configApp) =>
+                 {
+                     configApp.AddJsonFile($"serilog.json", optional: true);
+                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureKestrel(options => options.AddServerHeader = false);
                     webBuilder.UseStartup<Startup>();
+                })
+                .UseSerilog((hostContext, loggerConfig) =>
+                {
+                    loggerConfig
+                        .ReadFrom.Configuration(hostContext.Configuration)
+                        .Enrich.WithProperty("ComponentName", hostContext.HostingEnvironment.ApplicationName);
                 });
     }
 }

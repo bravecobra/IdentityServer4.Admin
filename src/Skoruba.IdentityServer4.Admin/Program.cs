@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
@@ -19,11 +18,6 @@ namespace Skoruba.IdentityServer4.Admin
 
         public static async Task Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
-                .Enrich.WithProperty("IdentityServer4.Admin", "IdentityServer4.Admin")
-                .CreateLogger();
-
             try
             {
                 var seed = args.Any(x => x == SeedArgs);
@@ -35,18 +29,17 @@ namespace Skoruba.IdentityServer4.Admin
                 // await DbMigrationHelpers.EnsureSeedData<IdentityServerConfigurationDbContext, AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext, UserIdentity, UserIdentityRole>(host);
                 if (seed)
                 {
-                    await DbMigrationHelpers.EnsureSeedData<IdentityServerConfigurationDbContext, AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext, UserIdentity, UserIdentityRole>(host);
+                    await DbMigrationHelpers
+                        .EnsureSeedData<IdentityServerConfigurationDbContext, AdminIdentityDbContext,
+                            IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext,
+                            UserIdentity, UserIdentityRole>(host);
                 }
 
                 host.Run();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Host terminated unexpectedly");
-            }
-            finally
-            {
-                Log.CloseAndFlush();
+                throw ex;
             }
         }
 
@@ -58,15 +51,24 @@ namespace Skoruba.IdentityServer4.Admin
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureLogging((hostingContext, logging) => {
-                    logging.ClearProviders();
-                    var logger = new LoggerConfiguration().ReadFrom.Configuration(hostingContext.Configuration).CreateLogger();
-                    logging.AddSerilog(logger);
-                })
+                 .ConfigureAppConfiguration((hostContext, configApp) =>
+                 {
+                     configApp.AddJsonFile($"serilog.json", optional: true);
+                     configApp.AddJsonFile($"identitydata.json", optional: true);
+                     configApp.AddJsonFile($"identityserverdata.json", optional: true);
+                     configApp.AddEnvironmentVariables();
+                     configApp.AddCommandLine(args);
+                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureKestrel(options => options.AddServerHeader = false);
                     webBuilder.UseStartup<Startup>();
+                })
+                .UseSerilog((hostContext, loggerConfig) =>
+                {
+                    loggerConfig
+                        .ReadFrom.Configuration(hostContext.Configuration)
+                        .Enrich.WithProperty("ComponentName", hostContext.HostingEnvironment.ApplicationName);
                 });
     }
 }
