@@ -144,6 +144,46 @@
         "AllowedScopes": [
           "api1"
         ]
+      },
+      {
+        "ClientId": "mvc",
+        "ClientName": "mvc",
+        "AllowedGrantTypes": [
+          "authorization_code"
+        ],
+        "RequireConsent": false,
+        "RequirePkce": true,
+        "AllowOfflineAccess": true,
+        "RedirectUris": [
+          "http://127.0.0.1.xip.io:5003/signin-oidc"
+        ],
+        "PostLogoutRedirectUris":[
+          "http://127.0.0.1.xip.io:5003/signout-callback-oidc"
+        ],
+        "ClientSecrets": [
+          {
+            "Value": "secret"
+          }
+        ],
+        "AllowedScopes": [
+          "openid",
+          "profile",
+          "api1"
+        ]
+      },{
+        "ClientId" : "js",
+        "ClientName" : "JavaScript Client",
+        "AllowedGrantTypes" : "authorization_code",
+        "RequirePkce" : true,
+        "RequireClientSecret": false,
+        "RedirectUris" : [ "http://127.0.0.1.xip.io:5004/callback.html" ],
+        "PostLogoutRedirectUris": [ "http://127.0.0.1.xip.io:5004/index.html" ],
+        "AllowedCorsOrigins" : [ "http://127.0.0.1.xip.io:5004" ],
+        "AllowedScopes": [
+          "openid",
+          "profile",
+          "api1"
+        ]
       }
     ]
   }

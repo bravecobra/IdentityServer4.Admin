@@ -32,7 +32,7 @@ namespace Api
                 // this defines a CORS policy called "default"
                 options.AddPolicy("default", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5003")
+                    policy.WithOrigins("http://127.0.0.1.xip.io:5004")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });

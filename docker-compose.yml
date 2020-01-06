@@ -30,6 +30,21 @@ services:
     networks:
       identityadmin: null
 
+  javascriptclient:
+    image: '${DOCKER_REGISTRY-}javascriptclient'
+    ports:
+      - '5004:80'
+    build:
+      context: .
+      dockerfile: samples/Quickstarts/src/JavaScriptClient/Dockerfile
+    container_name: skoruba-javascriptclient
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - './compose/javascriptclient/appsettings.json:/app/appsettings.json'
+    networks:
+      identityadmin: null
+
   skoruba.identityserver4.admin:
     image: '${DOCKER_REGISTRY-}skorubaidentityserver4admin'
     ports:
