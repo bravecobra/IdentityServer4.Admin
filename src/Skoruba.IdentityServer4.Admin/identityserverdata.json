@@ -75,6 +75,14 @@
             ]
           }
         ]
+      },
+      {
+        "Name": "api1",
+        "Scopes": [
+          {
+            "Name": "api1"
+          }
+        ]
       }
     ],
     "Clients": [
@@ -121,6 +129,21 @@
         ],
         "AllowAccessTokensViaBrowser": true
 
+      },
+      {
+        "ClientId": "clientcredentials",
+        "ClientName": "clientcredentials",
+        "AllowedGrantTypes": [
+          "client_credentials"
+        ],
+        "ClientSecrets": [
+          {
+            "Value": "secret"
+          }
+        ],
+        "AllowedScopes": [
+          "api1"
+        ]
       }
     ]
   }

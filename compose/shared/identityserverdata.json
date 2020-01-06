@@ -75,13 +75,21 @@
             ]
           }
         ]
+      },
+      {
+        "Name": "api1",
+        "Scopes": [
+          {
+            "Name": "api1"
+          }
+        ]
       }
     ],
     "Clients": [
       {
         "ClientId": "skoruba_identity_admin",
         "ClientName": "skoruba_identity_admin",
-        "ClientUri": "http://localhost:9000",
+        "ClientUri": "http://127.0.0.1.xip.io:9000",
         "AllowedGrantTypes": [
           "hybrid"
         ],
@@ -91,14 +99,14 @@
           }
         ],
         "RedirectUris": [
-          "http://localhost:9000/signin-oidc"
+          "http://127.0.0.1.xip.io:9000/signin-oidc"
         ],
-        "FrontChannelLogoutUri": "http://localhost:9000/signout-oidc",
+        "FrontChannelLogoutUri": "http://127.0.0.1.xip.io:9000/signout-oidc",
         "PostLogoutRedirectUris": [
-          "http://localhost:9000/signout-callback-oidc"
+          "http://127.0.0.1.xip.io:9000/signout-callback-oidc"
         ],
         "AllowedCorsOrigins": [
-          "http://localhost:9000"
+          "http://127.0.0.1.xip.io:9000"
         ],
         "AllowedScopes": [
           "openid",
@@ -114,13 +122,28 @@
           "implicit"
         ],
         "RedirectUris": [
-          "http://localhost:5001/swagger/oauth2-redirect.html"
+          "http://127.0.0.1.xip.io:5001/swagger/oauth2-redirect.html"
         ],
         "AllowedScopes": [
           "skoruba_identity_admin_api"
         ],
         "AllowAccessTokensViaBrowser": true
 
+      },
+      {
+        "ClientId": "clientcredentials",
+        "ClientName": "clientcredentials",
+        "AllowedGrantTypes": [
+          "client_credentials"
+        ],
+        "ClientSecrets": [
+          {
+            "Value": "secret"
+          }
+        ],
+        "AllowedScopes": [
+          "api1"
+        ]
       }
     ]
   }

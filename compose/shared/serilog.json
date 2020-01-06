@@ -16,6 +16,9 @@
         "Name": "Console"
       },
       {
+        "Name": "Debug"
+      },
+      {
         "Args": {
           "buffered": true,
           "flushToDiskInterval": 15,

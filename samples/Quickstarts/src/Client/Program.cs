@@ -39,7 +39,7 @@ namespace Client
 
                 Scope = "api1"
             });
-            
+
             if (tokenResponse.IsError)
             {
                 Console.WriteLine(tokenResponse.Error);
@@ -53,7 +53,7 @@ namespace Client
             var apiClient = new HttpClient();
             apiClient.SetBearerToken(tokenResponse.AccessToken);
 
-            var response = await apiClient.GetAsync("http://localhost:5001/identity");
+            var response = await apiClient.GetAsync("http://127.0.0.1.xip.io:5002/identity");
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine(response.StatusCode);
