@@ -22,7 +22,7 @@ namespace MvcClient
                 .AddCookie("Cookies")
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "http://localhost:5000";
+                    options.Authority = "http://127.0.0.1.xip.io";
                     options.RequireHttpsMetadata = false;
 
                     options.ClientId = "mvc";

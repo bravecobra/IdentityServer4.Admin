@@ -57,6 +57,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "samples\Quickstarts\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "samples\Quickstarts\src\Client\Client.csproj", "{681158EB-3A83-4A24-A03A-CF768C50051C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcClient", "samples\Quickstarts\src\MvcClient\MvcClient.csproj", "{2E73EC00-ADC1-45FF-9E5C-B27F6B77C2A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,10 @@ Global
 		{681158EB-3A83-4A24-A03A-CF768C50051C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{681158EB-3A83-4A24-A03A-CF768C50051C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{681158EB-3A83-4A24-A03A-CF768C50051C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E73EC00-ADC1-45FF-9E5C-B27F6B77C2A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E73EC00-ADC1-45FF-9E5C-B27F6B77C2A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E73EC00-ADC1-45FF-9E5C-B27F6B77C2A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E73EC00-ADC1-45FF-9E5C-B27F6B77C2A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,6 +174,7 @@ Global
 		{6EF84891-3AB7-4C8C-B214-C9FE29ED2CBA} = {1E132F9C-11BB-4C84-A958-73D6A9778CA7}
 		{7BC86F7B-5901-460F-AE0B-A662675AE75E} = {6EF84891-3AB7-4C8C-B214-C9FE29ED2CBA}
 		{681158EB-3A83-4A24-A03A-CF768C50051C} = {6EF84891-3AB7-4C8C-B214-C9FE29ED2CBA}
+		{2E73EC00-ADC1-45FF-9E5C-B27F6B77C2A4} = {6EF84891-3AB7-4C8C-B214-C9FE29ED2CBA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B3166EDE-037B-4C68-BEBA-5DE9C5E3DB82}
